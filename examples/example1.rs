@@ -1,16 +1,18 @@
 use std::io::Read;
 
+use lli::Library;
 use mlua::prelude::*;
 
-//fn r_print(_lua: &Lua, arg: LuaString) -> mlua::Result<()> {
-//    println!("{:?}", arg);
-//    Ok(())
-//}
-//
-//fn load_library(lua: &Lua, functions) {
-//    let r_print = lua.create_function(r_print).unwrap();
-//    lua.globals().set("r_print", r_print).unwrap();
-//}
+fn rust_print(lua: &Lua, arg: String) -> mlua::Result<()> {
+    println!("{}", arg);
+    Ok(())
+}
+
+fn insert_library(lua: &Lua) {
+    let lib = Library::new(lua);
+    lib.register_function("rust_print", rust_print);
+    lib.inject("@fish");
+} 
 
 fn main() {
     let mut file = std::fs::OpenOptions::new()
@@ -24,8 +26,7 @@ fn main() {
 
     let lua = Lua::new();
 
-    //load_library(&lua);
-    //lua.create_require_function(require)
+    insert_library(&lua);
 
     let chunk = lua.load(source);
     chunk.exec().unwrap();
