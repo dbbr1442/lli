@@ -29,4 +29,6 @@ fn main() {
 
     let chunk = lua.load(source);
     chunk.exec().unwrap();
+
+    loop {}
 }
