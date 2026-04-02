@@ -1,4 +1,4 @@
-use mlua::{FromLuaMulti, Function, IntoLuaMulti, Lua, MaybeSend, Table};
+use mlua::{FromLuaMulti, IntoLua, IntoLuaMulti, Lua, MaybeSend, Table};
 
 pub struct Library<'vm> {
     vm: &'vm Lua,
@@ -22,6 +22,10 @@ impl<'vm> Library<'vm> {
     {
         let function = self.vm.create_function(func).unwrap();
         self.lib.set(name, function).unwrap();
+    }
+
+    pub fn register_class<T: Default + IntoLua>(&self, name: &str) {
+        self.lib.set(name, T::default()).unwrap();
     }
 
     pub fn inject(self, mod_name: &str) {
